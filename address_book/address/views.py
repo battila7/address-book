@@ -17,6 +17,9 @@ class AddressList(generics.ListCreateAPIView):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
 
 class AddressBatchDeletion(rest_views.APIView):
     """View to delete multiple Addresses at the same time as required.
