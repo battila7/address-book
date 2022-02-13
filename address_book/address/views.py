@@ -21,6 +21,17 @@ class AddressList(generics.ListCreateAPIView):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
     permission_classes = [permissions.IsAuthenticated]
+    # Explicitly setting which fields are available for filtering. For example,
+    # created_at is excluded.
+    filterset_fields = (
+        "title",
+        "country",
+        "city",
+        "state",
+        "zip_code",
+        "address_line_one",
+        "address_line_two",
+    )
 
     def get_queryset(self):
         return Address.objects.filter(owner=self.request.user)
