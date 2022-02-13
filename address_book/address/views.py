@@ -1,4 +1,5 @@
 from rest_framework import generics, views as rest_views, response, status, permissions
+from drf_yasg.utils import swagger_auto_schema
 
 from .models import Address
 from .serializers import AddressSerializer, AddressBatchDeletionRequestSerializer
@@ -11,7 +12,40 @@ class AddressDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AddressSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get(self, request, *args, **kwargs):
+        """Retrieve Address
+
+        Retrieves a single address specified by its unique identifier.
+        """
+        return super().get(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        """Update Address
+
+        Updates a single address specified by its unique identifier. The updated
+        fields can be set via the appropriate body fields, where all fields are **required**.
+        """
+        return super().put(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        """Partial Update Address
+
+        Updates a single address specified by its unique identifier. The updated
+        fields can be set via the appropriate body fields, where all fields are **optional**.
+        """
+        return super().patch(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        """Delete Address
+
+        Deletes a single address specified by its unique identifier.
+        """
+        return super().delete(request, *args, **kwargs)
+
     def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):
+            return Address.objects.none()
+
         return Address.objects.filter(owner=self.request.user)
 
 
@@ -33,7 +67,29 @@ class AddressList(generics.ListCreateAPIView):
         "address_line_two",
     )
 
+    def get(self, request, *args, **kwargs):
+        """List Addresses
+
+        Lists the available addresses of the currently authenticated user.
+
+        This endpoint is filtered, use the appropriate query parameters to filter
+        the results returned. The filters are AND-ed together.
+
+        Pagination is also available with a page size of 10.
+        """
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """Create Address
+
+        Creates a new Address and assigns it to the currently authenticated user.
+        """
+        return super().post(request, *args, **kwargs)
+
     def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):
+            return Address.objects.none()
+
         return Address.objects.filter(owner=self.request.user)
 
     def perform_create(self, serializer):
@@ -61,7 +117,16 @@ class AddressBatchDeletion(rest_views.APIView):
         clients could check the deletion progress.
     """
 
+    permission_classes = [permissions.IsAuthenticated]
+
+    @swagger_auto_schema(
+        responses={204: None}, request_body=AddressBatchDeletionRequestSerializer
+    )
     def post(self, request):
+        """Batch Delete Addresses
+
+        Sends a new batch deletion request marking the specified Addresses as deleted.
+        """
         serializer = AddressBatchDeletionRequestSerializer(request.data)
         ids = serializer.data["ids"]
 
