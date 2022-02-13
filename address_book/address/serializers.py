@@ -24,3 +24,13 @@ class AddressSerializer(serializers.HyperlinkedModelSerializer):
             "address_line_one",
             "address_line_two",
         )
+
+
+class AddressBatchDeletionRequestSerializer(serializers.Serializer):
+    """Serializer for Address batch deletion requests.
+
+    The ids attributes corresponds to the identifiers of the Address
+    items we want to delete.
+    """
+
+    ids = serializers.ListField(child=serializers.IntegerField())
