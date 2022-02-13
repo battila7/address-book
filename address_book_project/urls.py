@@ -16,6 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from address_book.address import views as address_views
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("addresses/", address_views.AddressList.as_view(), name="address-list"),
+    path(
+        "addresses/<int:pk>/",
+        address_views.AddressDetail.as_view(),
+        name="address-detail",
+    ),
 ]
