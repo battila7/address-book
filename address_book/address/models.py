@@ -29,7 +29,7 @@ class Address(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
-    title = models.CharField(unique=True, max_length=100)
+    title = models.CharField(max_length=100)
 
     country = models.CharField(choices=COUNTRIES, max_length=2)
     state = models.CharField(max_length=100)
@@ -38,16 +38,25 @@ class Address(models.Model):
     address_line_one = models.CharField(max_length=100)
     address_line_two = models.CharField(max_length=100)
 
+    owner = models.ForeignKey(
+        "auth.User", related_name="addresses", on_delete=models.CASCADE
+    )
+
     class Meta:
-        # We don't need to consider the title attribute, as it
-        # has its own unique constraint.
         unique_together = [
             [
+                "owner",
+                "title",
+            ],
+            # We don't need to consider the title attribute, as it
+            # has its own unique constraint.
+            [
+                "owner",
                 "country",
                 "state",
                 "zip_code",
                 "city",
                 "address_line_one",
                 "address_line_two",
-            ]
+            ],
         ]
