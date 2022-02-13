@@ -19,7 +19,7 @@ class AddressSerializer(serializers.HyperlinkedModelSerializer):
             "title",
             "country",
             "state",
-            "zip",
+            "zip_code",
             "city",
             "address_line_one",
             "address_line_two",
